@@ -19,8 +19,14 @@ class Neuron(object):
     def __str__(self):
         return self.identifier
     
-    def set_activation(self, activation: float):
+    def set_activation(self, activation: float) -> None:
         self.activation = activation
+
+    def set_grad(self, grad: float) -> None:
+        self.grad = grad
+
+    def id(self, layer, idx):
+        return self if self.layer == layer and self.index == idx else None
 
     
 class NeuralNet(object):
@@ -66,20 +72,24 @@ class NeuralNet(object):
                   
         return weights_list, biases_list
 
-    def convert_list_to_np(self, layer: int):
+    def _convert_list_to_np(self, layer: int):
         return np.array([i.activation for i in self.net[layer]])
     
-    def convert_np_to_activations(self, layer: int, activations_as_npy: np.ndarray):
+    def _convert_np_to_activations(self, layer: int, activations_as_npy: np.ndarray):
         neurons = self.net[layer]
         for i, neuron in enumerate(neurons):
-            neuron.set_activation(activations_as_npy[i])            
+            neuron.set_activation(activations_as_npy[i])  
+
+    def get_neuron(self, layer: int, index: int) -> Neuron:
+        return self.net[layer][index]
+        
     
     def forward(self, input: np.ndarray):
         tmp = input.copy()
         for l in range(self.nlayers - 1):
             out: np.ndarray = np.dot(self.weights[l], tmp)
             out = out + self.biases[l]
-            self.convert_np_to_activations(layer = l, activations_as_npy=tmp)
+            self._convert_np_to_activations(layer = l, activations_as_npy=tmp)
             tmp = out.copy()
         
         return out
@@ -118,7 +128,9 @@ def test_net():
 
     output = net.forward(input)
 
-    print(output)
+    print(f'{output = }')
+    this_neuron = net.get_neuron(layer = 1, index = 2)
+    print(this_neuron.activation)
 
 if __name__ == "__main__":
     test_net()
