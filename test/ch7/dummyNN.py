@@ -108,9 +108,9 @@ def test_net():
 
     biases_list = [
         np.array([[1],
-                   [1],
-                   [1],
-                   [1]]),
+                  [1],
+                  [1],
+                  [1]]),
         np.array([[1],
                   [1]])
     ]
@@ -128,9 +128,16 @@ def test_net():
 
     output = net.forward(input)
 
-    print(f'{output = }')
+    # print(f'{output = }')
     this_neuron = net.get_neuron(layer = 1, index = 2)
-    print(this_neuron.activation)
+    # print(this_neuron.activation)
+
+    # if we get the first layer neurons, it should equate to the input
+    for i in range(len(input)):
+        this_input = input[i]
+        this_test = net.get_neuron(layer=0, index=i)
+
+        assert this_input == this_test.activation, f'{this_test = }, {this_input = }'
 
 if __name__ == "__main__":
     test_net()
